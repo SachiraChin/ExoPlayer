@@ -114,7 +114,12 @@ public class DashRendererBuilder implements RendererBuilder {
     private long elapsedRealtimeOffset;
 
     public AsyncRendererBuilder(Context context, String userAgent, String url,
-        MediaDrmCallback drmCallback, DemoPlayer player) {
+                                MediaDrmCallback drmCallback, DemoPlayer player) {
+      this(context, userAgent, url, drmCallback, player, null);
+    }
+
+    public AsyncRendererBuilder(Context context, String userAgent, String url,
+        MediaDrmCallback drmCallback, DemoPlayer player, String token) {
       this.context = context;
       this.userAgent = userAgent;
       this.drmCallback = drmCallback;

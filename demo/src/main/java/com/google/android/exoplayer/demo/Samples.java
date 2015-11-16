@@ -29,17 +29,27 @@ import java.util.Locale;
     public final String provider;
     public final String uri;
     public final int type;
+      public final String token;
+
+      public Sample(String name, String uri, int type, String token) {
+          this(name, name.toLowerCase(Locale.US).replaceAll("\\s", ""), "", uri, type, token);
+      }
 
     public Sample(String name, String uri, int type) {
-      this(name, name.toLowerCase(Locale.US).replaceAll("\\s", ""), "", uri, type);
+      this(name, name.toLowerCase(Locale.US).replaceAll("\\s", ""), "", uri, type, null);
     }
 
-    public Sample(String name, String contentId, String provider, String uri, int type) {
+      public Sample(String name, String contentId, String provider, String uri, int type) {
+          this(name, contentId, provider, uri, type, null);
+      }
+
+    public Sample(String name, String contentId, String provider, String uri, int type, String token) {
       this.name = name;
       this.contentId = contentId;
       this.provider = provider;
       this.uri = uri;
       this.type = type;
+        this.token = token;
     }
 
   }

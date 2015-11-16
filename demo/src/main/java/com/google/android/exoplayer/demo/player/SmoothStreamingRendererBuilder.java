@@ -63,21 +63,23 @@ public class SmoothStreamingRendererBuilder implements RendererBuilder {
   private final Context context;
   private final String userAgent;
   private final String url;
+  private final String token;
   private final MediaDrmCallback drmCallback;
 
   private AsyncRendererBuilder currentAsyncBuilder;
 
   public SmoothStreamingRendererBuilder(Context context, String userAgent, String url,
-      MediaDrmCallback drmCallback) {
+      MediaDrmCallback drmCallback, String token) {
     this.context = context;
     this.userAgent = userAgent;
     this.url = Util.toLowerInvariant(url).endsWith("/manifest") ? url : url + "/Manifest";
     this.drmCallback = drmCallback;
+    this.token = token;
   }
 
   @Override
   public void buildRenderers(DemoPlayer player) {
-    currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, drmCallback, player);
+    currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, drmCallback, player, token);
     currentAsyncBuilder.init();
   }
 
@@ -101,14 +103,20 @@ public class SmoothStreamingRendererBuilder implements RendererBuilder {
     private boolean canceled;
 
     public AsyncRendererBuilder(Context context, String userAgent, String url,
-        MediaDrmCallback drmCallback, DemoPlayer player) {
+                                MediaDrmCallback drmCallback, DemoPlayer player) {
+      this(context, userAgent, url, drmCallback, player, null);
+    }
+    public AsyncRendererBuilder(Context context, String userAgent, String url,
+        MediaDrmCallback drmCallback, DemoPlayer player, String token) {
       this.context = context;
       this.userAgent = userAgent;
       this.drmCallback = drmCallback;
       this.player = player;
       SmoothStreamingManifestParser parser = new SmoothStreamingManifestParser();
-      manifestFetcher = new ManifestFetcher<>(url, new DefaultHttpDataSource(userAgent, null),
-          parser);
+      DefaultHttpDataSource source =  new DefaultHttpDataSource(userAgent, null);
+      if (token != null)
+        source.setRequestProperty("Authorization", token);
+      manifestFetcher = new ManifestFetcher<>(url, source, parser);
     }
 
     public void init() {
@@ -157,6 +165,7 @@ public class SmoothStreamingRendererBuilder implements RendererBuilder {
 
       // Build the video renderer.
       DataSource videoDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
+
       ChunkSource videoChunkSource = new SmoothStreamingChunkSource(manifestFetcher,
           new DefaultSmoothStreamingTrackSelector(context, StreamElement.TYPE_VIDEO),
           videoDataSource, new AdaptiveEvaluator(bandwidthMeter), LIVE_EDGE_LATENCY_MS);

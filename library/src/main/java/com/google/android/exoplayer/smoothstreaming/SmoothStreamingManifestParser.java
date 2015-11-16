@@ -425,6 +425,7 @@ public class SmoothStreamingManifestParser implements UriLoadable.Parser<SmoothS
 
     @Override
     public Object build() {
+      if (initData == null) return null;
       return new ProtectionElement(uuid, PsshAtomUtil.buildPsshAtom(uuid, initData));
     }
 

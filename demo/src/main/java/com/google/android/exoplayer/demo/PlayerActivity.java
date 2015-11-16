@@ -82,6 +82,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
   public static final String CONTENT_ID_EXTRA = "content_id";
   public static final String CONTENT_TYPE_EXTRA = "content_type";
   public static final String PROVIDER_EXTRA = "provider";
+  public static final String TOKEN = "token";
   public static final int TYPE_DASH = 0;
   public static final int TYPE_SS = 1;
   public static final int TYPE_HLS = 2;
@@ -128,6 +129,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
   private int contentType;
   private String contentId;
   private String provider;
+  private String token;
 
   private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
@@ -205,6 +207,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
         inferContentType(contentUri, intent.getStringExtra(CONTENT_EXT_EXTRA)));
     contentId = intent.getStringExtra(CONTENT_ID_EXTRA);
     provider = intent.getStringExtra(PROVIDER_EXTRA);
+    token = intent.getStringExtra(TOKEN);
     configureSubtitleView();
     if (player == null) {
       preparePlayer(true);
@@ -261,7 +264,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     switch (contentType) {
       case TYPE_SS:
         return new SmoothStreamingRendererBuilder(this, userAgent, contentUri.toString(),
-            new SmoothStreamingTestMediaDrmCallback());
+            new SmoothStreamingTestMediaDrmCallback(), token);
       case TYPE_DASH:
         return new DashRendererBuilder(this, userAgent, contentUri.toString(),
             new WidevineTestMediaDrmCallback(contentId, provider));
